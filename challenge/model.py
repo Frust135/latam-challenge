@@ -44,13 +44,18 @@ class DelayModel:
             Tuple[pd.DataFrame, pd.DataFrame]: features and target.
             or
             pd.DataFrame: features.
-        """        
+        """
         data = self.generate_features(data)
         features = pd.concat([
             pd.get_dummies(data['OPERA'], prefix='OPERA'),
             pd.get_dummies(data['TIPOVUELO'], prefix='TIPOVUELO'),
             pd.get_dummies(data['MES'], prefix='MES'),            
         ], axis = 1)
+        # In case that the data hasn't all the columns
+        # we need to add the missing ones
+        for col in self.FEATURES_COLS:
+            if col not in features.columns:
+                features[col] = 0
         selected_features = features[self.FEATURES_COLS]
         if target_column is not None:
             target = data[[target_column]]
@@ -101,6 +106,8 @@ class DelayModel:
         Returns:
             pd.DataFrame: features.
         """
+        if 'Fecha-I' not in data or 'Fecha-O' not in data:
+            return data
         # 2.a. Period of Day
         data['period_day'] = data['Fecha-I'].apply(self.get_period_day)
         # 2.b. High Season
