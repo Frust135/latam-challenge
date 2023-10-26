@@ -1,0 +1,22 @@
+name: 'Continuous Integration'
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'features/*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker
+      uses: docker/setup-action@v2
+
+    - name: Verify Dockerfile
+      run: docker build -t my-temp-image -f Dockerfile .
